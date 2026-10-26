@@ -1,0 +1,100 @@
+--- a/ntp_core.c
++++ b/ntp_core.c
+@@ -47,6 +47,7 @@
+ #include "logging.h"
+ #include "addrfilt.h"
+ #include "clientlog.h"
++#include "request_log.h"
+ 
+ /* ================================================== */
+ 
+@@ -2666,6 +2667,7 @@
+   int log_index, interleaved, poll, version;
+   CLG_Limit limit;
+   uint32_t kod;
++  const char *result = "invalid_packet";
+ 
+   /* Ignore the packet if it wasn't received by server socket */
+   if (!NIO_IsServerSocket(local_addr->sock_fd)) {
+@@ -2674,12 +2676,13 @@
+   }
+ 
+   if (!parse_packet(message, length, &info))
+-    return;
++    goto log_request;
+ 
+   if (!ADF_IsAllowed(access_auth_table, &remote_addr->ip_addr)) {
++    result = "access_denied";
+     DEBUG_LOG("NTP packet received from unauthorised host %s",
+               UTI_IPToString(&remote_addr->ip_addr));
+-    return;
++    goto log_request;
+   }
+ 
+   switch (info.mode) {
+@@ -2702,8 +2705,9 @@
+       /* Fall through */
+     default:
+       /* Discard */
++      result = "unsupported_mode";
+       DEBUG_LOG("NTP packet discarded mode=%d", (int)info.mode);
+-      return;
++      goto log_request;
+   }
+ 
+   kod = 0;
+@@ -2712,23 +2716,26 @@
+   /* Don't reply to all requests if the rate is excessive */
+   limit = log_index >= 0 ? CLG_LimitServiceRate(CLG_NTP, log_index) : CLG_PASS;
+   if (limit == CLG_DROP) {
++      result = "rate_limited";
+       DEBUG_LOG("NTP packet discarded to limit response rate");
+-      return;
++      goto log_request;
+   }
+ 
+   /* Check authentication */
+   if (!NAU_CheckRequestAuth(message, &info, &kod)) {
++    result = "authentication_failed";
+     DEBUG_LOG("NTP packet failed auth mode=%d kod=%"PRIx32, (int)info.auth.mode, kod);
+ 
+     /* Don't respond unless a non-zero KoD was returned */
+     if (kod == 0)
+-      return;
++      goto log_request;
+   }
+ 
+   if (limit == CLG_KOD) {
++    result = "rate_limit_auth_conflict";
+     /* Don't respond if there is a conflict with the NTS NAK */
+     if (kod != 0)
+-      return;
++      goto log_request;
+     kod = KOD_RATE;
+   }
+ 
+@@ -2770,14 +2777,23 @@
+   version = info.version;
+ 
+   /* Send a reply */
++  if (!chrony_log_synchronized(rx_ts)) {
++    result = "not_synchronized";
++    goto log_request;
++  }
++  result = "response_failed";
+   if (!transmit_packet(my_mode, interleaved, poll, version, kod, info.ext_field_flags, NULL,
+                        &message->receive_ts, &message->transmit_ts,
+                        rx_ts, tx_ts, local_ntp_rx, NULL, remote_addr, local_addr,
+                        message, &info))
+-    return;
++    goto log_request;
++
++  result = kod ? "kod_sent" : "response_sent";
+ 
+   if (local_ntp_rx)
+     CLG_SaveNtpTimestamps(local_ntp_rx, &tx_ts->ts, tx_ts->source);
++log_request:
++  chrony_log_request(remote_addr, rx_ts, length, result);
+ }
+ 
+ /* ================================================== */

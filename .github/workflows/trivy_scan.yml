@@ -1,0 +1,46 @@
+name: Trivy Security Scan
+
+on:
+  workflow_run:
+    workflows: [Docker image]
+    types: [completed]
+
+env:
+  IMAGE_NAME: ghcr.io/rootshell-coder/chrony-log
+  TRIVY_IMAGE: ghcr.io/rootshell-coder/trivy-cached:latest
+
+jobs:
+  trivy-scan:
+    name: Scan published image
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == github.event.repository.default_branch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull published image
+        run: docker pull "${IMAGE_NAME}:latest"
+      - name: Scan image and create report
+        run: |
+          docker save "${IMAGE_NAME}:latest" -o image.tar
+          docker run --rm \
+            --volume "${PWD}:/scan" \
+            "${TRIVY_IMAGE}" image --input /scan/image.tar --skip-db-update \
+            --format table --output /scan/SECURITY.txt
+      - name: Upload security report
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrony-log-security
+          path: SECURITY.txt
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,33 @@
+services:
+  chrony:
+    image: ghcr.io/rootshell-coder/chrony-log:latest
+    restart: unless-stopped
+    user: "100:101"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    sysctls:
+      net.ipv4.ip_unprivileged_port_start: "123"
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,noexec,size=8m,mode=1777
+    environment:
+      NTP_POOLS: ${NTP_POOLS}
+      NTP_SERVERS: ${NTP_SERVERS}
+      LOG_TIME_OFFSET: ${LOG_TIME_OFFSET}
+      ALLOW_CIDR: ${ALLOW_CIDR}
+    ports:
+      - "123:123/udp"
+    healthcheck:
+      test: [CMD, /usr/bin/chronyc, -h, /tmp/chrony/chronyd.sock, waitsync, "1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+    mem_limit: 64m
+    cpus: 0.5
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

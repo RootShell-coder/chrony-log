@@ -1,0 +1,22 @@
+--- a/test/unit/ntp_core.c
++++ b/test/unit/ntp_core.c
+@@ -58,6 +58,19 @@
+   return 102;
+ }
+ 
++/* The packet tests model a synchronized server. Startup rejection is
++   covered by the container smoke test. Keep local reference parameters. */
++#include <reference.h>
++static void
++test_reference(struct timespec *time, int *synced, NTP_Leap *leap,
++               int *stratum, uint32_t *id, struct timespec *reference_time,
++               double *delay, double *dispersion)
++{
++  REF_GetReferenceParams(time, synced, leap, stratum, id, reference_time,
++                         delay, dispersion);
++  *synced = 1;
++}
++#define REF_GetReferenceParams test_reference
+ #include <ntp_core.c>
+ 
+ static void
