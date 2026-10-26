@@ -1,0 +1,237 @@
+Container test results
+Commit: ae84dfa5f580a13874ba47e2b3cf797262323727
+Run: https://github.com/RootShell-coder/chrony-log/actions/runs/40258885591
+Platform: linux/amd64
+
+
+>>> python docker/tests/config.py
+PASS: environment configuration, IPv4/IPv6, defaults, invalid values
+RESULT: PASS
+
+>>> python docker/tests/smoke.py
+2026-10-26T02:24:51Z chronyd version 4.8 starting (+CMDMON +REFCLOCK +RTC -PRIVDROP -SCFILTER -SIGND -NTS -SECHASH +IPV6 -DEBUG)
+2026-10-26T02:24:51Z Disabled control of system clock
+2026-10-26T02:24:53Z Selected source 172.17.0.1
+2026-10-26T02:24:54Z Denied NTP access from 172.17.0.1
+[
+  {
+    "timestamp": "2026-10-26T02:24:52.183962817Z",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 35173,
+    "request_bytes": 48,
+    "result": "not_synchronized",
+    "server_stratum": 16,
+    "synchronized": false,
+    "sequence": 1,
+    "log_dropped_total": 0
+  },
+  {
+    "timestamp": "2026-10-26T02:24:53.185157773Z",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 35173,
+    "request_bytes": 48,
+    "result": "not_synchronized",
+    "server_stratum": 16,
+    "synchronized": false,
+    "sequence": 2,
+    "log_dropped_total": 0
+  },
+  {
+    "timestamp": "2026-10-26T02:24:54.186386415Z",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 35173,
+    "request_bytes": 48,
+    "result": "response_sent",
+    "server_stratum": 2,
+    "synchronized": true,
+    "sequence": 3,
+    "log_dropped_total": 0
+  },
+  {
+    "timestamp": "2026-10-26T02:24:54.186580917Z",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 35173,
+    "request_bytes": 48,
+    "result": "invalid_packet",
+    "server_stratum": 2,
+    "synchronized": true,
+    "sequence": 4,
+    "log_dropped_total": 0
+  },
+  {
+    "timestamp": "2026-10-26T02:24:54.441796973Z",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 35173,
+    "request_bytes": 48,
+    "result": "access_denied",
+    "server_stratum": 2,
+    "synchronized": true,
+    "sequence": 5,
+    "log_dropped_total": 0
+  }
+]
+PASS: unsynchronized silence, synchronized reply, invalid packet, ACL rejection, nonroot, SIGTERM
+RESULT: PASS
+
+>>> env TEST_LOG_TIME_OFFSET=+0100 python docker/tests/smoke.py
+2026-10-26T02:24:55Z chronyd version 4.8 starting (+CMDMON +REFCLOCK +RTC -PRIVDROP -SCFILTER -SIGND -NTS -SECHASH +IPV6 -DEBUG)
+2026-10-26T02:24:55Z Disabled control of system clock
+2026-10-26T02:24:57Z Selected source 172.17.0.1
+2026-10-26T02:24:57Z Denied NTP access from 172.17.0.1
+[
+  {
+    "timestamp": "2026-10-26T03:24:55.579929717+01:00",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 44193,
+    "request_bytes": 48,
+    "result": "not_synchronized",
+    "server_stratum": 16,
+    "synchronized": false,
+    "sequence": 1,
+    "log_dropped_total": 0
+  },
+  {
+    "timestamp": "2026-10-26T03:24:56.581110698+01:00",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 44193,
+    "request_bytes": 48,
+    "result": "not_synchronized",
+    "server_stratum": 16,
+    "synchronized": false,
+    "sequence": 2,
+    "log_dropped_total": 0
+  },
+  {
+    "timestamp": "2026-10-26T03:24:57.582310619+01:00",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 44193,
+    "request_bytes": 48,
+    "result": "response_sent",
+    "server_stratum": 2,
+    "synchronized": true,
+    "sequence": 3,
+    "log_dropped_total": 0
+  },
+  {
+    "timestamp": "2026-10-26T03:24:57.582467051+01:00",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 44193,
+    "request_bytes": 48,
+    "result": "invalid_packet",
+    "server_stratum": 2,
+    "synchronized": true,
+    "sequence": 4,
+    "log_dropped_total": 0
+  },
+  {
+    "timestamp": "2026-10-26T03:24:57.835822209+01:00",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 44193,
+    "request_bytes": 48,
+    "result": "access_denied",
+    "server_stratum": 2,
+    "synchronized": true,
+    "sequence": 5,
+    "log_dropped_total": 0
+  }
+]
+PASS: unsynchronized silence, synchronized reply, invalid packet, ACL rejection, nonroot, SIGTERM
+RESULT: PASS
+
+>>> env TEST_LOG_TIME_OFFSET=-0530 python docker/tests/smoke.py
+2026-10-26T02:24:58Z chronyd version 4.8 starting (+CMDMON +REFCLOCK +RTC -PRIVDROP -SCFILTER -SIGND -NTS -SECHASH +IPV6 -DEBUG)
+2026-10-26T02:24:58Z Disabled control of system clock
+2026-10-26T02:25:00Z Selected source 172.17.0.1
+2026-10-26T02:25:01Z Denied NTP access from 172.17.0.1
+[
+  {
+    "timestamp": "2026-10-25T20:54:58.973102095-05:30",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 42496,
+    "request_bytes": 48,
+    "result": "not_synchronized",
+    "server_stratum": 16,
+    "synchronized": false,
+    "sequence": 1,
+    "log_dropped_total": 0
+  },
+  {
+    "timestamp": "2026-10-25T20:54:59.973928299-05:30",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 42496,
+    "request_bytes": 48,
+    "result": "not_synchronized",
+    "server_stratum": 16,
+    "synchronized": false,
+    "sequence": 2,
+    "log_dropped_total": 0
+  },
+  {
+    "timestamp": "2026-10-25T20:55:00.975166019-05:30",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 42496,
+    "request_bytes": 48,
+    "result": "response_sent",
+    "server_stratum": 2,
+    "synchronized": true,
+    "sequence": 3,
+    "log_dropped_total": 0
+  },
+  {
+    "timestamp": "2026-10-25T20:55:00.975359677-05:30",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 42496,
+    "request_bytes": 48,
+    "result": "invalid_packet",
+    "server_stratum": 2,
+    "synchronized": true,
+    "sequence": 4,
+    "log_dropped_total": 0
+  },
+  {
+    "timestamp": "2026-10-25T20:55:01.230486986-05:30",
+    "service": "chrony",
+    "event": "ntp_request",
+    "client_ip": "172.17.0.1",
+    "client_port": 42496,
+    "request_bytes": 48,
+    "result": "access_denied",
+    "server_stratum": 2,
+    "synchronized": true,
+    "sequence": 5,
+    "log_dropped_total": 0
+  }
+]
+PASS: unsynchronized silence, synchronized reply, invalid packet, ACL rejection, nonroot, SIGTERM
+RESULT: PASS
+
+Image build (includes unit and backpressure tests): success
+Container tests: success
