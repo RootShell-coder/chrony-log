@@ -47,7 +47,7 @@ jobs:
             "${TRIVY_IMAGE}" image --input /scan/image.tar --skip-db-update \
             --format table > SECURITY.txt
       - name: Upload security report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: chrony-log-security
           path: SECURITY.txt
