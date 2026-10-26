@@ -27,7 +27,15 @@ jobs:
           python-version: "3.13"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
+      - name: Start test report
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          printf 'Container test results\nCommit: %s\nRun: %s\nPlatform: linux/amd64\n\n' \
+            "${SOURCE_SHA}" "${RUN_URL}" > TEST_RESULTS.txt
       - name: Build image with unit and backpressure tests
+        id: test_image
         uses: docker/build-push-action@v7
         with:
           context: docker
@@ -37,11 +45,73 @@ jobs:
           cache-from: type=gha,scope=chrony-log-amd64
           cache-to: type=gha,mode=max,scope=chrony-log-amd64
       - name: Test NTP replies and JSON request logs
+        id: runtime_tests
         run: |
-          python docker/tests/config.py
-          python docker/tests/smoke.py
-          TEST_LOG_TIME_OFFSET=+0100 python docker/tests/smoke.py
-          TEST_LOG_TIME_OFFSET=-0530 python docker/tests/smoke.py
+          status=0
+          run_test() {
+            printf '\n>>> %s\n' "$*" | tee -a TEST_RESULTS.txt
+            if "$@" 2>&1 | tee -a TEST_RESULTS.txt; then
+              printf 'RESULT: PASS\n' | tee -a TEST_RESULTS.txt
+            else
+              printf 'RESULT: FAIL\n' | tee -a TEST_RESULTS.txt
+              status=1
+            fi
+          }
+          run_test python docker/tests/config.py
+          run_test python docker/tests/smoke.py
+          run_test env TEST_LOG_TIME_OFFSET=+0100 python docker/tests/smoke.py
+          run_test env TEST_LOG_TIME_OFFSET=-0530 python docker/tests/smoke.py
+          exit "$status"
+      - name: Finish test report
+        if: always()
+        env:
+          BUILD_RESULT: ${{ steps.test_image.outcome }}
+          TEST_RESULT: ${{ steps.runtime_tests.outcome }}
+        run: |
+          printf '\nImage build (includes unit and backpressure tests): %s\nContainer tests: %s\n' \
+            "${BUILD_RESULT}" "${TEST_RESULT}" >> TEST_RESULTS.txt
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-test-results
+          path: TEST_RESULTS.txt
+          if-no-files-found: error
+          retention-days: 30
+
+  test-report:
+    name: Commit container test report
+    needs: image-smoke
+    if: >-
+      always() && !cancelled() &&
+      github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    concurrency:
+      group: container-test-report-master
+      cancel-in-progress: false
+    steps:
+      - name: Check out master
+        uses: actions/checkout@v6
+        with:
+          ref: master
+      - name: Download test report
+        uses: actions/download-artifact@v4
+        with:
+          name: container-test-results
+      - name: Commit report
+        run: |
+          git add -- TEST_RESULTS.txt
+          if git diff --cached --quiet -- TEST_RESULTS.txt; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update container test results [skip ci]"
+          git pull --rebase origin master
+          git push origin HEAD:master
 
   build:
     name: Publish multi-platform image
@@ -65,12 +135,25 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Generate image metadata
+      - name: Read Chrony version
+        id: version
+        run: |
+          version=$(sed -n 's/^ARG CHRONY_VERSION=//p' docker/Dockerfile)
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+            echo "Invalid Chrony version: $version" >&2
+            exit 1
+          fi
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+      - name: Generate image tags
         id: meta
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: type=raw,value=latest
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ steps.version.outputs.value }}
+          labels: |
+            org.opencontainers.image.version=${{ steps.version.outputs.value }}
       - name: Build and publish image
         uses: docker/build-push-action@v7
         with:

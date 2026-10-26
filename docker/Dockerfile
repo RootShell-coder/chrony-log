@@ -1,10 +1,12 @@
+ARG CHRONY_VERSION=4.8
 FROM alpine:3.22 AS build
+ARG CHRONY_VERSION
 RUN apk add --no-cache build-base linux-headers curl tar patch
 WORKDIR /src
-RUN curl -fsSLO https://chrony-project.org/releases/chrony-4.8.tar.gz \
-    && echo '33ea8eb2a4daeaa506e8fcafd5d6d89027ed6f2f0609645c6f149b560d301706  chrony-4.8.tar.gz' | sha256sum -c - \
-    && tar -xzf chrony-4.8.tar.gz
-WORKDIR /src/chrony-4.8
+RUN curl -fsSLO "https://chrony-project.org/releases/chrony-${CHRONY_VERSION}.tar.gz" \
+    && echo "33ea8eb2a4daeaa506e8fcafd5d6d89027ed6f2f0609645c6f149b560d301706  chrony-${CHRONY_VERSION}.tar.gz" | sha256sum -c - \
+    && tar -xzf "chrony-${CHRONY_VERSION}.tar.gz"
+WORKDIR /src/chrony-${CHRONY_VERSION}
 COPY patches/ /patches/
 COPY request_log.h ./request_log.h
 COPY log_offset.h ./log_offset.h
@@ -30,12 +32,14 @@ RUN cc -static -Os -Wall -Wextra -Werror /src/entrypoint.c -o /out/entrypoint \
     && printf 'root:x:0:\nchrony:x:101:\n' > /out/etc/group
 
 FROM scratch
+ARG CHRONY_VERSION
+LABEL org.opencontainers.image.version=${CHRONY_VERSION}
 ENV PATH=/usr/local/bin:/usr/sbin:/usr/bin
 COPY --from=build /out/etc/ /etc/
 COPY --from=build /out/tmp/ /tmp/
 COPY --from=build /out/usr/sbin/chronyd /usr/sbin/chronyd
 COPY --from=build /out/usr/bin/chronyc /usr/bin/chronyc
-COPY --from=build /src/chrony-4.8/COPYING /usr/share/licenses/chrony/COPYING
+COPY --from=build /src/chrony-${CHRONY_VERSION}/COPYING /usr/share/licenses/chrony/COPYING
 COPY chrony.conf /usr/share/chrony-log/chrony.conf
 COPY --from=build /out/entrypoint /usr/local/bin/entrypoint
 USER 100:101

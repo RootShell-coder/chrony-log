@@ -2,6 +2,8 @@
 
 These examples use `ghcr.io/rootshell-coder/chrony-log:latest` and allow NTP requests from `192.168.0.0/24`. Change the subnet to match your network. Port **123/UDP** must be available on the server.
 
+Use `ghcr.io/rootshell-coder/chrony-log:4.8` to stay on Chrony 4.8. Currently `4.8` and `latest` refer to the same image. When Chrony is upgraded, `latest` follows the new version. The `4.8` tag can still receive fixes to the container and logging patch.
+
 ## Docker Compose
 
 Open `examples/docker` and copy the settings file:
