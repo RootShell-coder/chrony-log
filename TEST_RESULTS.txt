@@ -1,6 +1,6 @@
 Container test results
-Commit: ae84dfa5f580a13874ba47e2b3cf797262323727
-Run: https://github.com/RootShell-coder/chrony-log/actions/runs/40258885591
+Commit: a037ddf588e1555a8c0ccaf34d0e299035406bd3
+Run: https://github.com/RootShell-coder/chrony-log/actions/runs/40260032005
 Platform: linux/amd64
 
 
@@ -9,17 +9,17 @@ PASS: environment configuration, IPv4/IPv6, defaults, invalid values
 RESULT: PASS
 
 >>> python docker/tests/smoke.py
-2026-10-26T02:24:51Z chronyd version 4.8 starting (+CMDMON +REFCLOCK +RTC -PRIVDROP -SCFILTER -SIGND -NTS -SECHASH +IPV6 -DEBUG)
-2026-10-26T02:24:51Z Disabled control of system clock
-2026-10-26T02:24:53Z Selected source 172.17.0.1
-2026-10-26T02:24:54Z Denied NTP access from 172.17.0.1
+2026-10-26T02:37:57Z chronyd version 4.8 starting (+CMDMON +REFCLOCK +RTC -PRIVDROP -SCFILTER -SIGND -NTS -SECHASH +IPV6 -DEBUG)
+2026-10-26T02:37:57Z Disabled control of system clock
+2026-10-26T02:37:59Z Selected source 172.17.0.1
+2026-10-26T02:38:00Z Denied NTP access from 172.17.0.1
 [
   {
-    "timestamp": "2026-10-26T02:24:52.183962817Z",
+    "timestamp": "2026-10-26T02:37:58.187699951Z",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 35173,
+    "client_port": 36889,
     "request_bytes": 48,
     "result": "not_synchronized",
     "server_stratum": 16,
@@ -28,11 +28,11 @@ RESULT: PASS
     "log_dropped_total": 0
   },
   {
-    "timestamp": "2026-10-26T02:24:53.185157773Z",
+    "timestamp": "2026-10-26T02:37:59.188885723Z",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 35173,
+    "client_port": 36889,
     "request_bytes": 48,
     "result": "not_synchronized",
     "server_stratum": 16,
@@ -41,11 +41,11 @@ RESULT: PASS
     "log_dropped_total": 0
   },
   {
-    "timestamp": "2026-10-26T02:24:54.186386415Z",
+    "timestamp": "2026-10-26T02:38:00.190099925Z",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 35173,
+    "client_port": 36889,
     "request_bytes": 48,
     "result": "response_sent",
     "server_stratum": 2,
@@ -54,11 +54,11 @@ RESULT: PASS
     "log_dropped_total": 0
   },
   {
-    "timestamp": "2026-10-26T02:24:54.186580917Z",
+    "timestamp": "2026-10-26T02:38:00.190313787Z",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 35173,
+    "client_port": 36889,
     "request_bytes": 48,
     "result": "invalid_packet",
     "server_stratum": 2,
@@ -67,11 +67,11 @@ RESULT: PASS
     "log_dropped_total": 0
   },
   {
-    "timestamp": "2026-10-26T02:24:54.441796973Z",
+    "timestamp": "2026-10-26T02:38:00.441713262Z",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 35173,
+    "client_port": 36889,
     "request_bytes": 48,
     "result": "access_denied",
     "server_stratum": 2,
@@ -84,17 +84,17 @@ PASS: unsynchronized silence, synchronized reply, invalid packet, ACL rejection,
 RESULT: PASS
 
 >>> env TEST_LOG_TIME_OFFSET=+0100 python docker/tests/smoke.py
-2026-10-26T02:24:55Z chronyd version 4.8 starting (+CMDMON +REFCLOCK +RTC -PRIVDROP -SCFILTER -SIGND -NTS -SECHASH +IPV6 -DEBUG)
-2026-10-26T02:24:55Z Disabled control of system clock
-2026-10-26T02:24:57Z Selected source 172.17.0.1
-2026-10-26T02:24:57Z Denied NTP access from 172.17.0.1
+2026-10-26T02:38:01Z chronyd version 4.8 starting (+CMDMON +REFCLOCK +RTC -PRIVDROP -SCFILTER -SIGND -NTS -SECHASH +IPV6 -DEBUG)
+2026-10-26T02:38:01Z Disabled control of system clock
+2026-10-26T02:38:03Z Selected source 172.17.0.1
+2026-10-26T02:38:03Z Denied NTP access from 172.17.0.1
 [
   {
-    "timestamp": "2026-10-26T03:24:55.579929717+01:00",
+    "timestamp": "2026-10-26T03:38:01.542406326+01:00",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 44193,
+    "client_port": 51162,
     "request_bytes": 48,
     "result": "not_synchronized",
     "server_stratum": 16,
@@ -103,11 +103,11 @@ RESULT: PASS
     "log_dropped_total": 0
   },
   {
-    "timestamp": "2026-10-26T03:24:56.581110698+01:00",
+    "timestamp": "2026-10-26T03:38:02.543600980+01:00",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 44193,
+    "client_port": 51162,
     "request_bytes": 48,
     "result": "not_synchronized",
     "server_stratum": 16,
@@ -116,11 +116,11 @@ RESULT: PASS
     "log_dropped_total": 0
   },
   {
-    "timestamp": "2026-10-26T03:24:57.582310619+01:00",
+    "timestamp": "2026-10-26T03:38:03.544814710+01:00",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 44193,
+    "client_port": 51162,
     "request_bytes": 48,
     "result": "response_sent",
     "server_stratum": 2,
@@ -129,11 +129,11 @@ RESULT: PASS
     "log_dropped_total": 0
   },
   {
-    "timestamp": "2026-10-26T03:24:57.582467051+01:00",
+    "timestamp": "2026-10-26T03:38:03.545006508+01:00",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 44193,
+    "client_port": 51162,
     "request_bytes": 48,
     "result": "invalid_packet",
     "server_stratum": 2,
@@ -142,11 +142,11 @@ RESULT: PASS
     "log_dropped_total": 0
   },
   {
-    "timestamp": "2026-10-26T03:24:57.835822209+01:00",
+    "timestamp": "2026-10-26T03:38:03.791886410+01:00",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 44193,
+    "client_port": 51162,
     "request_bytes": 48,
     "result": "access_denied",
     "server_stratum": 2,
@@ -159,17 +159,17 @@ PASS: unsynchronized silence, synchronized reply, invalid packet, ACL rejection,
 RESULT: PASS
 
 >>> env TEST_LOG_TIME_OFFSET=-0530 python docker/tests/smoke.py
-2026-10-26T02:24:58Z chronyd version 4.8 starting (+CMDMON +REFCLOCK +RTC -PRIVDROP -SCFILTER -SIGND -NTS -SECHASH +IPV6 -DEBUG)
-2026-10-26T02:24:58Z Disabled control of system clock
-2026-10-26T02:25:00Z Selected source 172.17.0.1
-2026-10-26T02:25:01Z Denied NTP access from 172.17.0.1
+2026-10-26T02:38:04Z chronyd version 4.8 starting (+CMDMON +REFCLOCK +RTC -PRIVDROP -SCFILTER -SIGND -NTS -SECHASH +IPV6 -DEBUG)
+2026-10-26T02:38:04Z Disabled control of system clock
+2026-10-26T02:38:06Z Selected source 172.17.0.1
+2026-10-26T02:38:07Z Denied NTP access from 172.17.0.1
 [
   {
-    "timestamp": "2026-10-25T20:54:58.973102095-05:30",
+    "timestamp": "2026-10-25T21:08:04.903406459-05:30",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 42496,
+    "client_port": 40646,
     "request_bytes": 48,
     "result": "not_synchronized",
     "server_stratum": 16,
@@ -178,11 +178,11 @@ RESULT: PASS
     "log_dropped_total": 0
   },
   {
-    "timestamp": "2026-10-25T20:54:59.973928299-05:30",
+    "timestamp": "2026-10-25T21:08:05.904546614-05:30",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 42496,
+    "client_port": 40646,
     "request_bytes": 48,
     "result": "not_synchronized",
     "server_stratum": 16,
@@ -191,11 +191,11 @@ RESULT: PASS
     "log_dropped_total": 0
   },
   {
-    "timestamp": "2026-10-25T20:55:00.975166019-05:30",
+    "timestamp": "2026-10-25T21:08:06.905745647-05:30",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 42496,
+    "client_port": 40646,
     "request_bytes": 48,
     "result": "response_sent",
     "server_stratum": 2,
@@ -204,11 +204,11 @@ RESULT: PASS
     "log_dropped_total": 0
   },
   {
-    "timestamp": "2026-10-25T20:55:00.975359677-05:30",
+    "timestamp": "2026-10-25T21:08:06.905901177-05:30",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 42496,
+    "client_port": 40646,
     "request_bytes": 48,
     "result": "invalid_packet",
     "server_stratum": 2,
@@ -217,11 +217,11 @@ RESULT: PASS
     "log_dropped_total": 0
   },
   {
-    "timestamp": "2026-10-25T20:55:01.230486986-05:30",
+    "timestamp": "2026-10-25T21:08:07.152210336-05:30",
     "service": "chrony",
     "event": "ntp_request",
     "client_ip": "172.17.0.1",
-    "client_port": 42496,
+    "client_port": 40646,
     "request_bytes": 48,
     "result": "access_denied",
     "server_stratum": 2,
